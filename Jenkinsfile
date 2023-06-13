@@ -27,6 +27,8 @@ pipeline {
     failure {
       steps {
         script {
+          def fwdJobOwnerGroup = load 'FwdJobOwnerGroup.groovy'
+          def failureEmailToMonitoring = load 'failureEmailToMonitoring.groovy'
           failureEmailToMonitoring.call("Failure details", fwdJobOwnerGroup.FwdJobOwner.NETWORK_TEAM, fwdJobOwnerGroup.FwdJobOwner.PERF_JOB_OWNERS)
         }
       }
