@@ -1,3 +1,14 @@
+stage('Load Groovy Files') {
+  steps {
+    script {
+      def fwdJobOwnerGroup = load 'FwdJobOwnerGroup.groovy'
+      def failureEmailToMonitoring = load 'failureEmailToMonitoring.groovy'
+
+      // Use the loaded Groovy files as needed in your pipeline script
+      // ...
+    }
+  }
+}
 pipeline {
     agent any
 
