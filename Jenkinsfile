@@ -1,32 +1,35 @@
-stage('Load Groovy Files') {
-  steps {
-    script {
-      def fwdJobOwnerGroup = load 'FwdJobOwnerGroup.groovy'
-      def failureEmailToMonitoring = load 'failureEmailToMonitoring.groovy'
+pipeline {
+  agent any
 
-      // Use the loaded Groovy files as needed in your pipeline script
-      // ...
+  stages {
+    stage('Load Groovy Files') {
+      steps {
+        script {
+          def fwdJobOwnerGroup = load 'FwdJobOwnerGroup.groovy'
+          def failureEmailToMonitoring = load 'failureEmailToMonitoring.groovy'
+
+          // Use the loaded Groovy files as needed in your pipeline script
+          // ...
+        }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        script {
+          failureEmailToMonitoring.call("Test details", fwdJobOwnerGroup.FwdJobOwner.NETWORK_TEAM)
+        }
+      }
     }
   }
-}
-pipeline {
-    agent any
 
-    stages {
-        stage('Test') {
-            steps {
-                script {
-                    failureEmailToMonitoring("Test details", FwdJobOwner.NETWORK_TEAM)
-                }
-            }
+  post {
+    failure {
+      steps {
+        script {
+          failureEmailToMonitoring.call("Failure details", fwdJobOwnerGroup.FwdJobOwner.NETWORK_TEAM, fwdJobOwnerGroup.FwdJobOwner.PERF_JOB_OWNERS)
         }
+      }
     }
-
-    post {
-        failure {
-            script {
-                failureEmailToMonitoring("Failure details", FwdJobOwner.NETWORK_TEAM, FwdJobOwner.PERF_JOB_OWNERS)
-            }
-        }
-    }
+  }
 }
